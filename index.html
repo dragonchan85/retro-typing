@@ -119,6 +119,21 @@
       transform: translate(-50%, -50%);
       display: none;
     }
+
+    footer {
+      width: 100%;
+      background-color: #000;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    footer .adsbygoogle {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 728px;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -260,18 +275,17 @@
   </script>
 
   <!-- ✅ 광고는 페이지 맨 아래에 위치 -->
-  <div style="text-align: center; margin: 30px 0;">
+  <footer>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9288770962100185"
             crossorigin="anonymous"></script>
     <ins class="adsbygoogle"
-         style="display:block"
          data-ad-client="ca-pub-9288770962100185"
          data-ad-slot="6399153707"
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
     <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
-  </div>
+  </footer>
 </body>
 </html>
