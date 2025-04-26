@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="레트로 타자 게임으로 타자 속도와 정확도를 향상시킬 수 있는 재미있는 게임입니다. 게임을 시작하여 점수와 레벨을 높여보세요.">
+  <meta name="keywords" content="타자 게임, 타자 연습, 한글 타자, 레트로 게임, 타자 속도, 타자 정확도">
+  <meta name="author" content="레트로 타자 연습">
+  <title>레트로 타자 게임</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #0f0;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #0f0;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    #game {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      border: 2px solid #0f0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .word {
+      position: absolute;
+      font-size: 24px;
+      font-weight: bold;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: fall linear;
+    }
+
+    @keyframes fall {
+      to {
+        top: 100%;
+      }
+    }
+
+    #input {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 20px;
+      width: 100%;
+      max-width: 600px;
+      background: #000;
+      color: #0f0;
+      border: 2px solid #0f0;
+      box-sizing: border-box;
+    }
+
+    #game-over {
+      color: red;
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 20px;
+      display: none;
+    }
+
+    #start-btn, #restart-btn {
+      padding: 15px 30px;
+      font-size: 20px;
+      color: #fff;
+      background-color: #0f0;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      text-transform: uppercase;
+    }
+
+    #start-btn:hover, #restart-btn:hover {
+      background-color: #3b3;
+    }
+
+    /* 모바일 최적화 */
+    @media (max-width: 600px) {
+      #game {
+        width: 90%;
+        height: 300px;
+      }
+
+      #input, #start-btn, #restart-btn {
+        font-size: 18px;
+        width: 90%;
+      }
+    }
+
+    /* 타이머와 점수 표시 */
+    #score-time {
+      color: #0f0;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* 속도 증가 메시지 */
+    #speed-increase-message {
+      color: #ff0;
+      font-size: 18px;
+      font-weight: bold;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🕹 레트로 타자 연습 🕹</h1>
+  <div id="game"></div>
+  <input type="text" id="input" placeholder="단어를 입력하세요" autocomplete="off" disabled>
+  <div id="score-time">
+    <span id="time">시간: 0</span> | <span id="score">점수: 0</span>
+  </div>
+  <button id="start-btn">게임 시작</button>
+  <button id="restart-btn" class="hidden">게임 재시작</button>
+  <div id="game-over" class="hidden">게임 오버!</div>
+  <div id="speed-increase-message" class="hidden">속도가 증가했습니다!</div>
+
+  <!-- 구글 애드센스 영역 -->
+  <div style="text-align: center; margin-top: 20px;">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9288770962100185" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block; width: 100%; height: 90px;"
+         data-ad-client="ca-pub-9288770962100185"
+         data-ad-slot="6399153707"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <script>
+    const words = [
+      "한글", "타자", "연습", "속도", "정확도", "게임", "컴퓨터", "자판", "레트로", "연습중", "도전", "집중", "승리", "실패", "시작",
+      "기술", "배우기", "게임기", "도전하기", "우승", "게임오버", "타이핑", "키보드", "시작하기", "연습하기", "올해", "목표", "속도측정",
+      "전략", "성공", "도움", "힘내기", "끝내기", "미션", "레벨", "레벨업", "점프", "뛰어넘기", "글자", "단어", "패턴", "입력", "타이핑속도",
+      "복습", "알기", "배워보자", "게임시간", "점수차", "동기", "게임플레이", "퀴즈", "연속", "활동", "연습모드", "도전해보자", "타자속도",
+      "속도증가", "정확도향상", "목표달성", "과제", "게임방", "기록", "도전정신", "디지털", "디지털화", "새로운게임", "새로운단어", "선택",
+      "첫단계", "시작은", "열정", "충전", "게임세상", "정확하게", "완성", "진행중", "업그레이드", "꾸준히", "완벽", "목표지향", "속도향상",
+      "내기록", "시간제한", "리셋", "계속", "주간목표", "빠른타자", "정확한타자", "게임중", "레트로타자", "진행", "빠르게", "계속도전",
+      "게임고수", "타자왕", "디지털게임", "게임진행", "성공적인", "행운", "도약", "빠른시작", "도전중", "마지막단계", "목표달성중",
+      "게임과제", "점프점프", "게임타자", "타자연습", "단어연습", "빠른타자기술", "높은정확도", "도전목표", "계속해서", "타자도전", "타자기록",
+      "빠른타자기록", "시작중", "타자왕의길", "도전의길", "도전하는자", "더빠르게", "지속성", "빠른연습"
+    ];
+
+    const gameArea = document.getElementById("game");
+    const input = document.getElementById("input");
+    const gameOverText = document.getElementById("game-over");
+    const startBtn = document.getElementById("start-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const scoreDisplay = document.getElementById("score");
+    const timeDisplay = document.getElementById("time");
+    const speedIncreaseMessage = document.getElementById("speed-increase-message");
+
+    let currentWord = null;
+    let wordElement = null;
+    let animationId = null;
+    let fallingSpeed = 1;
+    let gameStarted = false;
+    let score = 0;
+    let gameTime = 0;
+    let gameInterval;
+    let level = 1;
+
+    function spawnWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
+      const span = document.createElement("span");
+      span.classList.add("word");
+      span.textContent = word;
+      span.style.left = `${Math.random() * 80 + 10}%`;
+      gameArea.appendChild(span);
+      currentWord = word;
+      wordElement = span;
+      moveWord();
+    }
+
+    function moveWord() {
+      let top = 0;
+      animationId = requestAnimationFrame(function animate() {
+        top += fallingSpeed;
+        if (wordElement) wordElement.style.top = top + "px";
+
+        // 바닥에 닿음
+        if (top >= gameArea.clientHeight - 30) {
+          gameOver();
+          return;
+        }
+
+        animationId = requestAnimationFrame(animate);
+      });
+    }
+
+    function checkInput() {
+      if (input.value.trim() === currentWord) {
+        score++;
+        scoreDisplay.textContent = `점수: ${score}`;
+        cancelAnimationFrame(animationId);
+        if (wordElement) wordElement.remove();
+        input.value = "";
+        spawnWord();
+      }
+    }
+
+    function gameOver() {
+      cancelAnimationFrame(animationId);
+      if (wordElement) wordElement.remove();
+      input.disabled = true;
+      gameOverText.classList.remove("hidden");
+      restartBtn.classList.remove("hidden");
+      clearInterval(gameInterval); // 게임 시간 정지
+    }
+
+    function gameLoop() {
+      gameTime++;
+      timeDisplay.textContent = `시간: ${gameTime}s`;
+
+      // 3초마다 난이도(속도) 증가
+      if (gameTime % 3 === 0) {
+        level++;
+        fallingSpeed = 1 + level * 0.1;
+        speedIncreaseMessage.classList.remove("hidden");
+        setTimeout(() => {
+          speedIncreaseMessage.classList.add("hidden");
+        }, 1000); // 1초 후 메시지 숨김
+      }
+    }
+
+    startBtn.addEventListener("click", () => {
+      if (!gameStarted) {
+        gameStarted = true;
+        startBtn.classList.add("hidden");
+        input.disabled = false;
+        input.focus();
+        spawnWord();
+        gameInterval = setInterval(gameLoop, 1000); // 게임 시간 시작
+      }
+    });
+
+    input.addEventListener("input", checkInput);
+
+    restartBtn.addEventListener("click", () => {
+      gameStarted = false;
+      score = 0;
+      gameTime = 0;
+      level = 1;
+      fallingSpeed = 1;
+      scoreDisplay.textContent = "점수: 0";
+      timeDisplay.textContent = "시간: 0";
+      gameOverText.classList.add("hidden");
+      restartBtn.classList.add("hidden");
+      startBtn.classList.remove("hidden");
+      gameArea.innerHTML = ""; // 기존 단어 삭제
+      input.value = "";
+      input.disabled = true;
+      clearInterval(gameInterval); // 기존 게임 루프 종료
+    });
+  </script>
+</body>
+</html>
