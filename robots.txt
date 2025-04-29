@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /private/
 Allow: /
 
-Sitemap: https://dragonchan85.github.io/retro-typing/sitemap.xml
+Sitemap: https://retro-typing.yesnomark.com/sitemap.xml
